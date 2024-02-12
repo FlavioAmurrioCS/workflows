@@ -12,6 +12,9 @@ on:
         required: false
         type: string
         default: null # TODO: figure out how to reference entrypoint here
+    secrets:
+      PYPI_API_TOKEN:
+        required: true
 
 jobs:
   build:
@@ -74,6 +77,8 @@ jobs:
           path: dist/
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   github-release:
     name: >-
