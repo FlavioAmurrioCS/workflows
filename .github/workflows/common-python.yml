@@ -11,7 +11,7 @@ on:
       zipapp-name:
         required: false
         type: string
-        default: ${{ github.event.inputs.zipapp-entrypoint }}
+        default: null
 
 jobs:
   build:
