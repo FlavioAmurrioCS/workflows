@@ -11,7 +11,7 @@ on:
       zipapp-name:
         required: false
         type: string
-        default: null
+        default: null # TODO: figure out how to reference entrypoint here
 
 jobs:
   build:
@@ -43,14 +43,14 @@ jobs:
         run: >-
           python3 -m
           shiv
-          -o ${{ inputs.zipapp-name }}.pyz
+          -o ${{ inputs.zipapp-name }}
           -c ${{ inputs.zipapp-entrypoint }}
           .
       - uses: actions/upload-artifact@v4
         if: ${{ inputs.zipapp-entrypoint != null }}
         with:
-          name: ${{ inputs.zipapp-name }}.pyz
-          path: ${{ inputs.zipapp-name }}.pyz
+          name: ${{ inputs.zipapp-name }}
+          path: ${{ inputs.zipapp-name }}
           retention-days: 3
 
   publish-to-pypi:
@@ -96,14 +96,14 @@ jobs:
       - uses: actions/download-artifact@v4
         if: ${{ inputs.zipapp-entrypoint != null }}
         with:
-          name: ${{ inputs.zipapp-name }}.pyz
+          name: ${{ inputs.zipapp-name }}
       - name: Sign the dists with Sigstore
         uses: sigstore/gh-action-sigstore-python@v1.2.3
         with:
           inputs: >-
             ./dist/*.tar.gz
             ./dist/*.whl
-            ./*.pyz
+            ${{ inputs.zipapp-name }}
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -120,7 +120,7 @@ jobs:
         # sigstore-produced signatures and certificates.
         run: >-
           gh release upload
-          '${{ github.ref_name }}' dist/** ./*.pyz
+          '${{ github.ref_name }}' dist/** ${{ inputs.zipapp-name }}
           --repo '${{ github.repository }}'
 
 #   publish-to-testpypi:
