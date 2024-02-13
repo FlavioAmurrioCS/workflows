@@ -11,10 +11,6 @@ jobs:
     uses: ./.github/workflows/common-python.yml
     secrets:
       PYPI_API_TOKEN: 'NONE'
-    with:
-      pypa-name: pypa-name-holder
-      zipapp-entrypoint: dev
-      zipapp-name: comma-cli.pyz
     permissions:
       contents: write
       id-token: write
