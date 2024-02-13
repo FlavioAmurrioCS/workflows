@@ -13,3 +13,6 @@ jobs:
       PYPI_API_TOKEN: 'NONE'
     with:
       pypa-name: main
+    permissions:
+      contents: write
+      id-token: write
