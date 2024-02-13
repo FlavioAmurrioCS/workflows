@@ -1,0 +1,17 @@
+name: main
+
+on:
+  push:
+    branches: [main, test-me-*]
+    tags: '*'
+  pull_request:
+
+jobs:
+  main:
+    if: false
+    uses: ./.github/workflows/common-python.yml
+    secrets:
+      PYPI_API_TOKEN: 'NONE'
+    permissions:
+      contents: write
+      id-token: write
