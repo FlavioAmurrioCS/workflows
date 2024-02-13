@@ -12,7 +12,7 @@ jobs:
     secrets:
       PYPI_API_TOKEN: 'NONE'
     with:
-      pypa-name: main
+      pypa-name: pypa-name-holder
     permissions:
       contents: write
       id-token: write
