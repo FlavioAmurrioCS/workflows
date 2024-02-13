@@ -2,24 +2,51 @@ on:
   workflow_call:
     inputs:
       pypa-name:
-        required: true
+        required: false
         type: string
+        default: ${{ github.event.repository.name }}
+        description: >-
+          The name of the package on PyPI. This is the name that will be used to
+          publish the package to PyPI. If the package name on PyPI is different
+          from the repository name, you can specify it here.
       zipapp-entrypoint:
         required: false
         type: string
         default: null
+        description: >-
+          The entrypoint for the zipapp. If this is not specified, the zipapp
+          will not be built. If this is specified, the zipapp will be built and
+          uploaded as an artifact.
       zipapp-name:
         required: false
         type: string
         default: null # TODO: figure out how to reference entrypoint here
+        description: >-
+          The name of the zipapp. If this is not specified, it will default to
+          the name of the {zipapp-entrypoint}.pyz if the entrypoint is specified.
     secrets:
       PYPI_API_TOKEN:
         required: true
+        description: >-
+          The API token for the PyPI account that will be used to publish the
+          package. This is a secret and should be stored in the repository's
+          secrets.
+
+env:
+  ZIPAPP_NAME: ${{ inputs.zipapp-name || format('{0}{1}', inputs.zipapp-entrypoint, '.pyz') }}
 
 jobs:
   dump_contexts_to_log:
     runs-on: ubuntu-latest
     steps:
+      - name: Dump Env context
+        env:
+          ENV_CONTEXT: ${{ toJson(env) }}
+        run: echo "$ENV_CONTEXT"
+      - name: Dump Inputs context
+        env:
+          INPUTS_CONTEXT: ${{ toJson(inputs) }}
+        run: echo "$INPUTS_CONTEXT"
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
