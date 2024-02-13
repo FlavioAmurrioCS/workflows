@@ -46,6 +46,7 @@ jobs:
         run: echo "$MATRIX_CONTEXT"
 
   build:
+    if: false
     name: Build distribution 📦
     runs-on: ubuntu-latest
 
