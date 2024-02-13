@@ -20,7 +20,7 @@ on:
       zipapp-name:
         required: false
         type: string
-        default: null # TODO: figure out how to reference entrypoint here
+        default: null
         description: >-
           The name of the zipapp. If this is not specified, it will default to
           the name of the {zipapp-entrypoint}.pyz if the entrypoint is specified.
@@ -50,44 +50,7 @@ env:
   ZIPAPP_NAME: ${{ inputs.zipapp-name || ( inputs.zipapp-entrypoint && format('{0}{1}', inputs.zipapp-entrypoint, '.pyz') || '') }}
 
 jobs:
-  dump_contexts_to_log:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump Env context
-        env:
-          ENV_CONTEXT: ${{ toJson(env) }}
-        run: echo "$ENV_CONTEXT"
-      - name: Dump Inputs context
-        env:
-          INPUTS_CONTEXT: ${{ toJson(inputs) }}
-        run: echo "$INPUTS_CONTEXT"
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-        run: echo "$STRATEGY_CONTEXT"
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
-
   build:
-    if: false
     name: Build distribution 📦
     runs-on: ubuntu-latest
 
@@ -132,7 +95,7 @@ jobs:
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
-    if: ${{ inputs.enable-pypi && startsWith(github.ref, 'refs/tags/') }}  # only publish to PyPI on tag pushes
+    if: ${{ inputs.enable-pypi && startsWith(github.ref, 'refs/tags/') }} # only publish to PyPI on tag pushes
     needs:
       - build
     runs-on: ubuntu-latest
@@ -157,7 +120,7 @@ jobs:
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}  # only publish to GitHub Releases on tag pushes
+    if: ${{ startsWith(github.ref, 'refs/tags/') }} # only publish to GitHub Releases on tag pushes
     needs:
       - build
     runs-on: ubuntu-latest
@@ -201,28 +164,3 @@ jobs:
           gh release upload
           '${{ github.ref_name }}' dist/** ${{ env.ZIPAPP_NAME }}
           --repo '${{ github.repository }}'
-
-#   publish-to-testpypi:
-#     if: false # uncomment this line to enable publishing to TestPyPI
-#     name: Publish Python 🐍 distribution 📦 to TestPyPI
-#     needs:
-#       - build
-#     runs-on: ubuntu-latest
-
-#     environment:
-#       name: testpypi
-#       url: https://test.pypi.org/p/${{}}
-
-#     permissions:
-#       id-token: write # IMPORTANT: mandatory for trusted publishing
-
-#     steps:
-#       - name: Download all the dists
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: python-package-distributions
-#           path: dist/
-#       - name: Publish distribution 📦 to TestPyPI
-#         uses: pypa/gh-action-pypi-publish@release/v1
-#         with:
-#           repository-url: https://test.pypi.org/legacy/
