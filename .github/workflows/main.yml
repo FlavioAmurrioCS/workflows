@@ -13,8 +13,8 @@ jobs:
     secrets:
       PYPI_API_TOKEN: 'NONE'
     with:
-      zipapp-entrypoint: ',workflows'
-      zipapp-name: 'workflows.pyz'
+      pypa-name: gh-workflows
+      zipapp-entrypoint: gh-workflows
       enable-pypi: false
     permissions:
       contents: write

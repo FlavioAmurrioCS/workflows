@@ -5,3 +5,4 @@ temp
 /.tox
 dist
 build
+_version.py
