@@ -1,5 +1,12 @@
 on:
   workflow_call:
+    secrets:
+      PYPI_API_TOKEN:
+        required: true
+        description: >-
+          The API token for the PyPI account that will be used to publish the
+          package. This is a secret and should be stored in the repository's
+          secrets.
     inputs:
       pypa-name:
         required: false
@@ -27,7 +34,7 @@ on:
       python-version:
         required: false
         type: string
-        default: "3.x"
+        default: "3.8"
         description: >-
           The version of Python to use for building the package. This should be
           a string that is compatible with the `actions/setup-python` action.
@@ -38,18 +45,52 @@ on:
         description: >-
           Whether to publish the package to PyPI. If this is set to `false`, the
           package will not be published to PyPI.
-    secrets:
-      PYPI_API_TOKEN:
-        required: true
+      os:
+        required: false
+        type: string
+        default: ubuntu-latest
         description: >-
-          The API token for the PyPI account that will be used to publish the
-          package. This is a secret and should be stored in the repository's
-          secrets.
+          The operating system to use for building the package. This should be a
+          string that is compatible with the `runs-on` field in a job.
+      env:
+        required: false
+        type: string
+        default: '["3.8", "3.9", "3.10", "3.11", "3.12", "pypy3.9"]'
+        description: >-
+          The Python versions to use for testing the package. This should be a
+          JSON array of strings that are compatible with the `python-version`
+          field in the `actions/setup-python` action.
+      arch:
+        required: false
+        type: string
+        default: '["x64"]'
+        description: >-
+          The architectures to use for testing the package. This should be a
+          JSON array of strings that are compatible with the `architecture` field
+          in the `actions/setup-python` action.
 
 env:
   ZIPAPP_NAME: ${{ inputs.zipapp-name || ( inputs.zipapp-entrypoint && format('{0}{1}', inputs.zipapp-entrypoint, '.pyz') || '') }}
 
 jobs:
+  hatch-test:
+    name: ${{ inputs.os }} / ${{ matrix.env }}${{ inputs.arch != '["x64"]' && format(' /  {0}', matrix.arch) || '' }}
+    runs-on: ${{ inputs.os }}
+    strategy:
+      matrix:
+        env: ${{ fromJSON(inputs.env) }}
+        arch: ${{ fromJSON(inputs.arch) }}
+    steps:
+      - uses: asottile/workflows/.github/actions/fast-checkout@v1.6.0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.env }}
+          architecture: ${{ matrix.arch }}
+      - uses: ./.github/actions/pre-test
+        if: ${{ hashFiles('.github/actions/pre-test/action.yml') != '' }}
+      - run: python -mpip install --upgrade hatch pip
+      - run: hatch run test
+
   build:
     name: Build distribution 📦
     runs-on: ubuntu-latest
