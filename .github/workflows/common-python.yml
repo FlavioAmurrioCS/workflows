@@ -89,7 +89,7 @@ jobs:
       - uses: ./.github/actions/pre-test
         if: ${{ hashFiles('.github/actions/pre-test/action.yml') != '' }}
       - run: python -mpip install --upgrade hatch pip
-      - run: hatch run test
+      - run: hatch test
 
   build:
     name: Build distribution 📦

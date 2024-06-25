@@ -6,12 +6,12 @@ repos:
     hooks:
       - id: taplo
   - repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.12.0
+    rev: v3.13.0
     hooks:
       - id: reorder-python-imports
         args: [--py37-plus, --add-import, "from __future__ import annotations"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.3
+    rev: v0.4.10
     hooks:
       - id: ruff
         types_or: [python, pyi, jupyter]
@@ -33,7 +33,7 @@ repos:
       - id: mypy
         additional_dependencies: [types-all]
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.6.27
+    rev: v1.7.1
     hooks:
       - id: actionlint
 
@@ -54,8 +54,8 @@ repos:
         types: [python]
       - id: hatch-test
         name: hatch-test
-        entry: hatch run --parallel all:test
+        entry: env HATCH_ENV_TYPE_VIRTUAL_PATH= hatch test --parallel --all
         language: python
-        additional_dependencies: [hatch]
+        additional_dependencies: [hatch>=1.12.0]
         pass_filenames: false
         always_run: true
