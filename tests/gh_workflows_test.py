@@ -3,8 +3,9 @@ from __future__ import annotations
 import itertools
 import pkgutil
 
-import gh_workflows as pkg1
 import pytest
+
+import gh_workflows as pkg1
 
 modules = (
     name
