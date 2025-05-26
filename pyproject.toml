@@ -40,6 +40,9 @@ Documentation = "https://github.com/FlavioAmurrioCS/gh-workflows#readme"
 Issues = "https://github.com/FlavioAmurrioCS/gh-workflows/issues"
 Source = "https://github.com/FlavioAmurrioCS/gh-workflows"
 
+[project.scripts]
+gh-workflows = "gh_workflows.cli:main"
+
 ###############################################################################
 # region: hatch
 ###############################################################################
