@@ -111,7 +111,7 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python3 -m build
       - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: python-package-distributions
           path: dist/
@@ -126,7 +126,7 @@ jobs:
       - name: Check zipapp
         if: ${{ inputs.zipapp-entrypoint != null }}
         run: python3 ./${{ env.ZIPAPP_NAME }} --help
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: ${{ inputs.zipapp-entrypoint != null }}
         with:
           name: ${{ env.ZIPAPP_NAME }}
